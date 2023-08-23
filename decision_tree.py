@@ -45,6 +45,36 @@ class DecisionTreeClassifier():
             # best_split = self.get
             pass
         pass
+    
+    def obtener_mejor_split(self, dataset, num_features):
+        ''' Función para encontrar el mejor split '''
+        
+        # Diccionario para guardar el mejor split
+        best_split = {}
+        max_info_ganancia = -float("inf")
+        
+        # Loop sobre todos los features
+        for feature_i in range(num_features):
+            feature_values = dataset[:, feature_i]
+            possible_thresholds = np.unique(feature_values)
+            # Loop sobre todos los feature values presentes en la data
+            for threshold in possible_thresholds:
+                # Obtener el current split
+                dataset_left, dataset_right = self.split(dataset, feature_i, threshold)
+                # Revisar si los hijos no son nulos
+                if len(dataset_left) > 0 and len(dataset_right) > 0:
+                    y, left_y, right_y = dataset[:, -1], dataset_left[:, -1], dataset_right[:, -1]
+                    # Calcular la información de ganancia
+                    curr_info_ganancia = self.calculo_ganancia(y, left_y, right_y)
+                    # Actualizar el mejor split si es necesario
+                    if curr_info_ganancia > max_info_ganancia:
+                        best_split["feature_i"] = feature_i
+                        best_split["threshold"] = threshold
+                        best_split["dataset_left"] = dataset_left
+                        best_split["dataset_right"] = dataset_right
+                        best_split["curr_info_ganancia"] = curr_info_ganancia
+                        max_info_ganancia = curr_info_ganancia
+            
             
     def split(self, dataset, feature_index, threshold):
         ''' Función para dividir la data '''
