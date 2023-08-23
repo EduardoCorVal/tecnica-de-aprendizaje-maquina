@@ -42,9 +42,21 @@ class DecisionTreeClassifier():
         # Dividir hasta qye se cumplan las condicoones
         if curr_depth <= self.max_depth and num_samples >= self.min_samples_split:
             # Encontrar el mejor split
-            # best_split = self.get
-            pass
-        pass
+            best_split = self.obtener_mejor_split(dataset, num_features)
+            # Revisar si la ganancia de información es positiva
+            if best_split["info_gain"] > 0:
+                # Recur left
+                left_subtree = self.construir_arbol(best_split["dataset_left"], curr_depth+1)
+                # Recur right
+                right_subtree = self.construir_arbol(best_split["dataset_right"], curr_depth+1)
+                # Regresar el nodo de decision
+                return Node(best_split["feature_index"], best_split["threshold"],
+                            left_subtree, right_subtree, best_split["info_gain"])
+                
+        # Calcular leaf node
+        leaf_value = self.calcular_leaft_value(Y)
+        # Return leaf node
+        return Node(value=leaf_value)
     
     def obtener_mejor_split(self, dataset, num_features):
         ''' Función para encontrar el mejor split '''
@@ -72,7 +84,7 @@ class DecisionTreeClassifier():
                         best_split["threshold"] = threshold
                         best_split["dataset_left"] = dataset_left
                         best_split["dataset_right"] = dataset_right
-                        best_split["curr_info_ganancia"] = curr_info_ganancia
+                        best_split["info_gain"] = curr_info_ganancia
                         max_info_ganancia = curr_info_ganancia
             
             
