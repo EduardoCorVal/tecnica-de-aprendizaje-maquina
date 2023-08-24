@@ -23,6 +23,7 @@ class Node():
         
 class DecisionTreeClassifier():
     """Es el arbol de decisión"""
+    
     def __init__(self, min_samples_split = 2, max_depth = 2):
         '''Constructor de la clase'''
         
@@ -42,7 +43,7 @@ class DecisionTreeClassifier():
         # Dividir hasta qye se cumplan las condicoones
         if curr_depth <= self.max_depth and num_samples >= self.min_samples_split:
             # Encontrar el mejor split
-            best_split = self.obtener_mejor_split(dataset, num_features)
+            best_split = self.obtener_mejor_split(dataset, num_samples, num_features)
             # Revisar si la ganancia de información es positiva
             if best_split["info_gain"] > 0:
                 # Recur left
@@ -50,7 +51,7 @@ class DecisionTreeClassifier():
                 # Recur right
                 right_subtree = self.construir_arbol(best_split["dataset_right"], curr_depth+1)
                 # Regresar el nodo de decision
-                return Node(best_split["feature_index"], best_split["threshold"],
+                return Node(best_split["feature_i"], best_split["threshold"],
                             left_subtree, right_subtree, best_split["info_gain"])
                 
         # Calcular leaf node
@@ -58,7 +59,7 @@ class DecisionTreeClassifier():
         # Return leaf node
         return Node(value=leaf_value)
     
-    def obtener_mejor_split(self, dataset, num_features):
+    def obtener_mejor_split(self, dataset, num_samples, num_features):
         ''' Función para encontrar el mejor split '''
         
         # Diccionario para guardar el mejor split
@@ -87,6 +88,8 @@ class DecisionTreeClassifier():
                         best_split["info_gain"] = curr_info_ganancia
                         max_info_ganancia = curr_info_ganancia
             
+        # Return best split
+        return best_split
             
     def split(self, dataset, feature_index, threshold):
         ''' Función para dividir la data '''
@@ -124,6 +127,12 @@ class DecisionTreeClassifier():
         
         predicciones = [self.hacer_prediccion(x, self.root) for x in in_x]
         return predicciones
+    
+    def fit(self, x_in, y_in):
+        ''' Función para entrenar el arbol '''
+        
+        dataset = np.concatenate((x_in, y_in), axis=1)
+        self.root = self.construir_arbol(dataset)
     
     def hacer_prediccion(self, x, tree):
         ''' Funcion para predecir un solo data point '''
