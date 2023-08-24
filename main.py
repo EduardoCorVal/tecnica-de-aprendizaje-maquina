@@ -1,3 +1,12 @@
+"""
+Archivo principal
+
+Aquí se ejecuta el programa principal. Se importa el archivo 
+'decision_tree_classifier.py' para poder utilizar la clase
+"""
+
+__author__ = "Eduardo Joel Cortez Valente"
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score

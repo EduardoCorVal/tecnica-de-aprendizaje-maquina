@@ -1,6 +1,12 @@
 """
 Decision Tree Classifier
+
+En este archivo se encuentra la imprementación manual 
+de un decision tree classifier; algoritmo de aprendizaje 
+supervisado que se utiliza para problemas de clasificación.
 """
+
+__author__ = "Eduardo Joel Cortez Valente"
 
 import numpy as np
 import pandas as pd
