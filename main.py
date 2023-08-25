@@ -26,22 +26,26 @@ def conf_modelo(data, samples_split, depth=2, flag='csv'):
         X = data.iloc[:, :-1].values
         Y = data.iloc[:, -1].values.reshape(-1,1)
 
-    # Se dividen los datos en conjuntos de: 
-    #     * Entrenamiento (X_train, Y_train)
-    #     * Prueba (X_test, Y_Test)
-    # Se reserva el 20% de los datos para pruebas. Utilizo un random state de 13 para garantizar la reproducibilidad
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=.2, random_state=13)
+    # División original en entrenamiento, validación y prueba
+    X_train_initial, X_test, Y_train_initial, Y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
 
-    # Entrenamiento del modelo
+    # Nueva división en entrenamiento y validación
+    X_train, X_validation, Y_train, Y_validation = train_test_split(X_train_initial, Y_train_initial, test_size=0.2, random_state=13)
+
     classifier = DecisionTreeClassifier(min_samples_split=samples_split, max_depth=depth)
-    classifier.fit(X_train,Y_train)
+    classifier.fit(X_train, Y_train)
 
-    # Predicción del modelo
+    Y_pred_validation = classifier.prediccion(X_validation)
+    score_validation = accuracy_score(Y_validation, Y_pred_validation)
+    print(f"El resultado del accuracy en el conjunto de validación es de: {score_validation}\n")
+    print(f"{asterisks}\n")
+
+    # Ajustar el modelo nuevamente con el conjunto de entrenamiento completo
+    classifier.fit(X_train_initial, Y_train_initial)
+
     Y_pred = classifier.prediccion(X_test)
-
-    # Evaluación del modelo
     score = accuracy_score(Y_test, Y_pred)
-    print(f"El resultado del accuracy del modelo generado es de: {score}\n")
+    print(f"El resultado del accuracy en el conjunto de prueba es de: {score}\n")
     print(f"{asterisks}\n")
 
 
