@@ -13,6 +13,7 @@ import random as rand
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import recall_score
 from sklearn.model_selection import train_test_split
 from decision_tree_classifier import DecisionTreeClassifier
 
@@ -32,6 +33,7 @@ def precisionGrafica(val_scores: list, test_scores: list, dataset_name: str):
     plt.show()
     
 def conf_matrix(all_confusion_matrices: list):
+    '''Función para graficar las matrices de confusión'''
     
     # Convertir la lista en un array NumPy
     all_confusion_matrices = np.array(all_confusion_matrices)
@@ -58,10 +60,27 @@ def conf_matrix(all_confusion_matrices: list):
     # Guardar la figura en un archivo de imagen
     # plt.savefig(f'{dataset_name}_confusion_matrix.png')
     plt.show()
+    
+def recallGrafica(recall_scores: list, dataset_name: str):
+    '''Función para graficar los resultados de recall'''
+    
+    plt.figure(figsize=(10, 6)) 
+    plt.plot(range(1, 11), recall_scores, marker='o', label='Recall Score')
+    plt.title(f'Recall Score for {dataset_name}')
+    plt.xlabel('Case')
+    plt.ylabel('Recall Score')
+    plt.xticks(range(1, 11))
+    plt.legend()
+    plt.tight_layout()
+    # Guardar la figura en un archivo de imagen
+    # plt.savefig(f'{dataset_name}_recall_graph.png')
+    plt.show()
 
 def conf_modelo(data, samples_split, depth=2, flag='csv', dataset_name="Not specified"):
+    '''Función para obtener los resultados de la validación cruzada'''
+    
     # Asteriscos de separacion
-    asterisks = ''.join(['*' for _ in range(80)])
+    # asterisks = ''.join(['*' for _ in range(80)])
 
     # Obtener los datos
     # print(f"La información a utlizar sera: \n")
@@ -70,6 +89,7 @@ def conf_modelo(data, samples_split, depth=2, flag='csv', dataset_name="Not spec
     validation_scores = []
     test_scores = []
     all_confusion_matrices = []
+    recall_scores = []
 
     # Split del test de entrenamiento
     if flag == 'csv':
@@ -107,6 +127,9 @@ def conf_modelo(data, samples_split, depth=2, flag='csv', dataset_name="Not spec
         
         cm_validation = confusion_matrix(Y_validation, Y_pred_validation)
         all_confusion_matrices.append(cm_validation)
+        
+        recall = recall_score(Y_validation, Y_pred_validation, average='macro')
+        recall_scores.append(recall)
 
     # Graficar los resultados  
     precisionGrafica(validation_scores, test_scores, dataset_name)
@@ -114,10 +137,15 @@ def conf_modelo(data, samples_split, depth=2, flag='csv', dataset_name="Not spec
     # Mostrar las matrices de confusión
     conf_matrix(all_confusion_matrices)
     
-# Probando con 'iris.csv'
-data_1 = pd.read_csv("iris.csv")
-conf_modelo(data_1, samples_split=3, depth=3, dataset_name="iris.csv")
+    # Graficar los resultados de recall
+    recallGrafica(recall_scores, dataset_name)
+    
 
-# Probando con 'digits.csv'
-# data_2 = pd.read_csv("digits.csv")
-# conf_modelo(data_2, samples_split=2, depth=8, dataset_name="digits.csv")
+if __name__ == "__main__":
+    # Probando con 'iris.csv'
+    data_1 = pd.read_csv("iris.csv")
+    conf_modelo(data_1, samples_split=3, depth=3, dataset_name="iris.csv")
+
+    # Probando con 'digits.csv'
+    # data_2 = pd.read_csv("digits.csv")
+    # conf_modelo(data_2, samples_split=2, depth=8, dataset_name="digits.csv")
